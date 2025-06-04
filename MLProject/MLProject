@@ -1,0 +1,15 @@
+name: diabetes-prediction
+
+conda_env: conda.yaml
+
+entry_points:
+  main:
+    parameters:
+      data_path: {type: string, default: 'diabetes_processed.csv'}
+      model_name: {type: string, default: 'rf'}
+    command: 'python modelling.py --data_path {data_path} --model_name {model_name}'
+  
+  tune:
+    parameters:
+      data_path: {type: string, default: 'diabetes_processed.csv'}
+    command: 'python modelling.py --data_path {data_path} --tuning'
