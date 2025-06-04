@@ -37,7 +37,6 @@ jobs:
 
       - name: Export credentials
         run: |
-          echo 'DAGSHUB_USERNAME=${{ secrets.DAGSHUB_USERNAME }}' >> $GITHUB_ENV
           echo 'DAGSHUB_TOKEN=${{ secrets.DAGSHUB_TOKEN }}' >> $GITHUB_ENV
 
       - name: Run MLflow Project
