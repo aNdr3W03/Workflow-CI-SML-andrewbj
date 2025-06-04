@@ -52,7 +52,7 @@ def mlflow_setup():
         
     except Exception as e:
         logger.exception(f'MLflow setup for DagsHub failed: {e}.')
-        mlflow.set_tracking_uri('http://127.0.0.1:5000')
+        mlflow.set_tracking_uri('file:./mlruns')
         mlflow.set_experiment('Diabetes Prediction Tuning')
         logger.info('MLflow setup locally completed.')
 
