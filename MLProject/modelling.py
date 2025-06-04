@@ -21,8 +21,8 @@ from sklearn.tree import DecisionTreeClassifier
 from dotenv import load_dotenv
 load_dotenv()
 
-dagshub_username = os.environ.get('DAGSHUB_USERNAME')
 dagshub_token = os.environ.get('DAGSHUB_TOKEN')
+dagshub_username = 'aNdr3W03'
 dagshub_repo_name = 'diabetes-prediction'
 
 logging.basicConfig(
