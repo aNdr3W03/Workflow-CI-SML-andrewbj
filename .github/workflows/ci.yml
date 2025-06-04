@@ -1,0 +1,96 @@
+name: Diabetes Prediction CI/CD
+
+on:
+  # Trigger when there is a change or push to the main branch
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:  # Trigger manually via GitHub Actions UI
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Job
+        run: echo 'Starting Diabetes Prediction MLOps workflow...'
+        
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.12.7
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12.7'
+
+      - name: Check Environment
+        run: |
+          python --version
+          pip list
+
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Export credentials
+        run: |
+          echo 'DAGSHUB_USERNAME=${{ secrets.DAGSHUB_USERNAME }}' >> $GITHUB_ENV
+          echo 'DAGSHUB_TOKEN=${{ secrets.DAGSHUB_TOKEN }}' >> $GITHUB_ENV
+
+      - name: Run MLflow Project
+        working-directory: MLProject
+        run: |
+          mlflow run . -e tune -P data_path=diabetes_processed.csv --env-manager=local
+
+      - name: Get Latest MLflow run_id
+        run: |
+          RUN_ID=$(mlflow runs list --order-by 'start_time desc' --limit 1 --experiment-id 0 | tail -n 1 | awk '{print $1}')
+          echo 'RUN_ID=$RUN_ID' >> $GITHUB_ENV
+          echo 'Latest run_id: $RUN_ID'
+
+      - name: Install Python Dependencies
+        run: |
+          pip install gdown
+
+      - name: Upload to GitHub Artifacts
+        if: env.RUN_ID != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: diabetes-prediction-model-${{ env.RUN_ID }}
+          path: MLProject/models_tuned/
+          retention-days: 90
+
+      - name: Build Docker Model
+        run: |
+          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/diabetes-prediction:latest -f MLProject/Dockerfile .
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Tag Docker Image
+        run: |
+          docker tag diabetes-prediction ${{ secrets.DOCKER_HUB_USERNAME }}/diabetes-prediction:latest
+          docker tag diabetes-prediction ${{ secrets.DOCKER_HUB_USERNAME }}/diabetes-prediction:${{ env.RUN_ID }}
+
+      - name: Push Docker Image
+        run: |
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/diabetes-prediction:latest
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/diabetes-prediction:${{ env.RUN_ID }}
+
+      - name: Post Login to Docker Hub
+        run: echo 'Docker image pushed to Docker Hub successfully'
+
+      - name: Post Set up Python 3.12.7
+        run: echo 'Python 3.12.7 workflow completed'
+
+      - name: Post Run Checkout Repository
+        run: echo 'Repository checkout completed'
+
+      - name: Complete Job
+        run: echo 'Diabetes Prediction CI/CD workflow completed successfully'
