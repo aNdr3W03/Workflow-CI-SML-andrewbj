@@ -14,9 +14,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    env:
-      DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
-
     steps:
       - name: Set up Job
         run: echo 'Starting Diabetes Prediction MLOps workflow...'
@@ -28,6 +25,12 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.12.7'
+
+      - name: Set up Environment
+        run: |
+          touch .env
+          echo DAGSHUB_TOKEN=${{ secrets.DAGSHUB_TOKEN }} > .env
+          cat .env
 
       - name: Check Environment
         run: |
