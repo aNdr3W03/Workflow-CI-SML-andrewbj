@@ -57,7 +57,7 @@ def mlflow_setup():
         mlflow.set_experiment('Diabetes Prediction')
         logger.info('MLflow setup locally completed.')
 
-def load_data(data_path='modelling/diabetes_processed.csv'):
+def load_data(data_path='diabetes_processed.csv'):
     logger.info(f'Loading data from: {data_path}')
     df = pd.read_csv(data_path)
     
@@ -254,7 +254,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train and log a diabetes prediction model using MLflow.')
 
     parser.add_argument(
-        '-d', '--data_path', type=str, default='modelling/diabetes_processed.csv',
+        '-d', '--data_path', type=str, default='diabetes_processed.csv',
         help='Path to the processed data file.')
     
     group = parser.add_mutually_exclusive_group(required=True)

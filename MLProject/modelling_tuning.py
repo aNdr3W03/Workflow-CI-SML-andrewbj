@@ -56,7 +56,7 @@ def mlflow_setup():
         mlflow.set_experiment('Diabetes Prediction Tuning')
         logger.info('MLflow setup locally completed.')
 
-def load_data(data_path='modelling/diabetes_processed.csv'):
+def load_data(data_path='diabetes_processed.csv'):
     logger.info(f'Loading data from: {data_path}')
     df = pd.read_csv(data_path)
     
