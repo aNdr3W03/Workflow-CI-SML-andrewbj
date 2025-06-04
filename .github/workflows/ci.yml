@@ -14,6 +14,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    env:
+      DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
+      DAGSHUB_USERNAME: ${{ secrets.DAGSHUB_USERNAME }}
+
     steps:
       - name: Set up Job
         run: echo 'Starting Diabetes Prediction MLOps workflow...'
@@ -34,11 +38,6 @@ jobs:
       - name: Install Dependencies
         run: |
           pip install -r requirements.txt
-
-      - name: Export credentials
-        run: |
-          echo 'DAGSHUB_USERNAME=${{ secrets.DAGSHUB_USERNAME }}' >> $GITHUB_ENV
-          echo 'DAGSHUB_TOKEN=${{ secrets.DAGSHUB_TOKEN }}' >> $GITHUB_ENV
 
       - name: Run MLflow Project
         working-directory: MLProject
