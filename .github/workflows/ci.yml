@@ -41,7 +41,7 @@ jobs:
           DAGSHUB_USERNAME: ${{ secrets.DAGSHUB_USERNAME }}
         working-directory: MLProject
         run: |
-          mlflow run . -e tune -P data_path=diabetes_processed.csv
+          mlflow run . -e tune -P data_path=diabetes_processed.csv --env-manager=local
 
       - name: Get Latest MLflow run_id
         run: |
