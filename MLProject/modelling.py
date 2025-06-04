@@ -38,6 +38,8 @@ logging.basicConfig(
 logger = logging.getLogger('modelling.py')
 
 def mlflow_setup():
+    print(dagshub_token)
+    print(dagshub_username)
     try:
         if dagshub_username and dagshub_token:
             os.environ['MLFLOW_TRACKING_USERNAME'] = dagshub_username
