@@ -48,13 +48,13 @@ def mlflow_setup():
         else:
             raise ValueError('DagsHub Username and Token must set on the environment.')
         
-        mlflow.set_experiment('Diabetes Prediction')
+        mlflow.set_experiment('Diabetes Prediction CI/CD')
         logger.info('MLflow setup for DagsHub completed.')
         
     except Exception as e:
         logger.error(f'MLflow setup for DagsHub failed: {str(e)}.')
         mlflow.set_tracking_uri('file:./mlruns')
-        mlflow.set_experiment('Diabetes Prediction')
+        mlflow.set_experiment('Diabetes Prediction CI/CD')
         logger.info('MLflow setup locally completed.')
 
 def load_data(data_path='diabetes_processed.csv'):
@@ -195,17 +195,6 @@ def mlflow_log(model, model_name, params, metrics, cv_accuracy, input_data, cm):
 
 def main(args):
     try:
-        mlflow_setup()
-
-        X_train, X_test, y_train, y_test = load_data(args.data_path)
-        
-        model_params = {
-            'lr': {'C': 1.0, 'max_iter': 100},
-            'rf': {'n_estimators': 100, 'max_depth': 10},
-            'adaboost': {'n_estimators': 50, 'learning_rate': 1.0},
-            'dt': {'max_depth': 10}
-        }
-
         if args.tuning:
             import modelling_tuning
             logger.info('Model hyperparameter tuning started...')
@@ -224,6 +213,17 @@ def main(args):
 
             return best_run_id
         else:
+            mlflow_setup()
+
+            X_train, X_test, y_train, y_test = load_data(args.data_path)
+            
+            model_params = {
+                'lr': {'C': 1.0, 'max_iter': 100},
+                'rf': {'n_estimators': 100, 'max_depth': 10},
+                'adaboost': {'n_estimators': 50, 'learning_rate': 1.0},
+                'dt': {'max_depth': 10}
+            }
+            
             model_name = args.model_name
             params = model_params.get(model_name, {})
 

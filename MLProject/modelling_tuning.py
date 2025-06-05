@@ -47,13 +47,13 @@ def mlflow_setup():
         else:
             raise ValueError('DagsHub Username and Token must set on the environment.')
         
-        mlflow.set_experiment('Diabetes Prediction Tuning')
+        mlflow.set_experiment('Diabetes Prediction Tuning CI/CD')
         logger.info('MLflow setup for DagsHub completed.')
         
     except Exception as e:
         logger.exception(f'MLflow setup for DagsHub failed: {e}.')
         mlflow.set_tracking_uri('file:./mlruns ')
-        mlflow.set_experiment('Diabetes Prediction Tuning')
+        mlflow.set_experiment('Diabetes Prediction Tuning CI/CD')
         logger.info('MLflow setup locally completed.')
 
 def load_data(data_path='diabetes_processed.csv'):
