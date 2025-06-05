@@ -21,9 +21,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 dagshub_username = 'aNdr3W03'
-dagshub_token = 'ce65cb27b756223a79bc382ba57f0695e5172a96'
+dagshub_token = 'fd3014e970fc7cbf9a0e1c69a33cb067a4f3cbec'
 dagshub_repo_name = 'diabetes-prediction'
-    
+
 os.environ['MLFLOW_TRACKING_USERNAME'] = dagshub_username
 os.environ['MLFLOW_TRACKING_PASSWORD'] = dagshub_token
 
