@@ -542,7 +542,7 @@ def main():
         logger.info(f'Accuracy: {best_model_info['metrics']['accuracy']:.4f}')
         logger.info(f'Run ID: {best_model_info['run_id']}')
 
-        run_id_path = 'models_tuned/best_tuned_model_run_id.txt'
+        run_id_path = 'best_tuned_model_run_id.txt'
         os.makedirs(os.path.dirname(run_id_path), exist_ok=True)
         with open(run_id_path, 'w') as f:
             f.write(best_model_info['run_id'])

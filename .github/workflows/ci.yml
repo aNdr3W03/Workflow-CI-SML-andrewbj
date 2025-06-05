@@ -47,7 +47,7 @@ jobs:
       - name: Get Latest MLflow run_id
         working-directory: MLProjetc
         run: |
-          RUN_ID=$(cat models_tuned/best_tuned_model_run_id.txt)
+          RUN_ID=$(cat best_tuned_model_run_id.txt)
           echo 'RUN_ID=$RUN_ID' >> $GITHUB_ENV
           echo 'Latest run_id: $RUN_ID'
 
