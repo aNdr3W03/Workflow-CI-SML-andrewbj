@@ -126,6 +126,7 @@ def model_train(X_train, X_test, y_train, y_test, model_name, params=None):
 
 def mlflow_log(model, model_name, params, metrics, cv_accuracy, input_data, cm):
     logger.info('Logging to MLflow.')
+    mlflow_setup()
     with mlflow.start_run(run_name=f'{model_name}_run') as run:
         for param, value in params.items():
             mlflow.log_param(param, value)
