@@ -21,15 +21,9 @@ from sklearn.tree import DecisionTreeClassifier
 from dotenv import load_dotenv
 load_dotenv()
 
-dagshub_username = 'aNdr3W03'
-dagshub_token = 'b17fd08352b7dda20320f448d4427e3d9c7ad212'
-dagshub_repo_name = 'diabetes-prediction'
-
-os.environ['MLFLOW_TRACKING_USERNAME'] = dagshub_username
-os.environ['MLFLOW_TRACKING_PASSWORD'] = dagshub_token
-
-mlflow_uri = f'https://dagshub.com/{dagshub_username}/{dagshub_repo_name}.mlflow'
-mlflow.set_tracking_uri(mlflow_uri)
+dagshub_username = os.environ.get('DAGSHUB_USERNAME')
+dagshub_token = os.environ.get('DAGSHUB_TOKEN')
+dagshub_repo_name = os.environ.get('DAGSHUB_REPO_NAME')
 
 logging.basicConfig(
     level=logging.INFO,
@@ -46,17 +40,21 @@ logger = logging.getLogger('modelling_tuning.py')
 def mlflow_setup():
     try:
         if dagshub_username and dagshub_token:
-            mlflow.set_tracking_uri(mlflow_uri)
+            os.environ['MLFLOW_TRACKING_USERNAME'] = dagshub_username
+            os.environ['MLFLOW_TRACKING_PASSWORD'] = dagshub_token
+
+            mlflow_url = f'https://dagshub.com/{dagshub_username}/{dagshub_repo_name}.mlflow'
+            mlflow.set_tracking_uri(mlflow_url)
         else:
             raise ValueError('DagsHub Username and Token must set on the environment.')
         
-        mlflow.set_experiment('Diabetes Prediction Tuning CI')
+        mlflow.set_experiment('Diabetes Pred Tuned CI')
         logger.info('MLflow setup for DagsHub completed.')
         
     except Exception as e:
         logger.exception(f'MLflow setup for DagsHub failed: {e}.')
         mlflow.set_tracking_uri('file:./mlruns ')
-        mlflow.set_experiment('Diabetes Prediction Tuning CI')
+        mlflow.set_experiment('Diabetes Pred Tuned CI')
         logger.info('MLflow setup locally completed.')
 
 def load_data(data_path='diabetes_processed.csv'):
@@ -492,7 +490,7 @@ def dt_model_tuning(X_train, X_test, y_train, y_test):
 
 def main():
     try:
-        # mlflow_setup()
+        mlflow_setup()
 
         X_train, X_test, y_train, y_test = load_data()
 
