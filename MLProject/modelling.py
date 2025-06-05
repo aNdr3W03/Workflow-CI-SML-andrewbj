@@ -246,7 +246,6 @@ def main(args):
             logger.info(f'Cross-validation accuracy: {cv_accuracy:.4f}')
 
             run_id_path = 'model_run_id.txt'
-            os.makedirs(os.path.dirname(run_id_path), exist_ok=True)
             with open(run_id_path, 'w') as f:
                 f.write(run_id)
             logger.info('Run ID saved to file.')
