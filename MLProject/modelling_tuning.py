@@ -37,9 +37,9 @@ logging.basicConfig(
 logger = logging.getLogger('modelling_tuning.py')
 
 if dagshub_username == 'aNdr3W03':
-    print('DagsHub username is set to aNdr3W03')
+    print('DagsHub username is set to USERNAME=aNdr3W03')
 else:
-    print('DagsHub username is not set to aNdr3W03')
+    print('DagsHub username is not set to USERNAME=aNdr3W03')
 
 def mlflow_setup():
     try:
