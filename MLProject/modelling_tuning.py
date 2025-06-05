@@ -36,6 +36,11 @@ logging.basicConfig(
 
 logger = logging.getLogger('modelling_tuning.py')
 
+if dagshub_username == 'aNdr3W03':
+    print('DagsHub username is set to aNdr3W03')
+else:
+    print('DagsHub username is not set to aNdr3W03')
+
 def mlflow_setup():
     try:
         if dagshub_username and dagshub_token:
@@ -52,7 +57,7 @@ def mlflow_setup():
         
     except Exception as e:
         logger.exception(f'MLflow setup for DagsHub failed: {e}.')
-        mlflow.set_tracking_uri('file:./mlruns')
+        mlflow.set_tracking_uri('file:./mlruns ')
         mlflow.set_experiment('Diabetes Prediction Tuning')
         logger.info('MLflow setup locally completed.')
 
