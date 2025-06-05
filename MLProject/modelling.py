@@ -25,6 +25,9 @@ dagshub_username = os.environ.get('DAGSHUB_USERNAME')
 dagshub_token = os.environ.get('DAGSHUB_TOKEN')
 dagshub_repo_name = 'diabetes-prediction'
 
+os.environ['MLFLOW_TRACKING_USERNAME'] = dagshub_username
+os.environ['MLFLOW_TRACKING_PASSWORD'] = dagshub_token
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s %(name)s [%(levelname)s] %(message)s',
@@ -40,9 +43,6 @@ logger = logging.getLogger('modelling.py')
 def mlflow_setup():
     try:
         if dagshub_username and dagshub_token:
-            os.environ['MLFLOW_TRACKING_USERNAME'] = dagshub_username
-            os.environ['MLFLOW_TRACKING_PASSWORD'] = dagshub_token
-
             mlflow_url = f'https://dagshub.com/{dagshub_username}/{dagshub_repo_name}.mlflow'
             mlflow.set_tracking_uri(mlflow_url)
         else:
