@@ -21,15 +21,15 @@ from sklearn.tree import DecisionTreeClassifier
 from dotenv import load_dotenv
 load_dotenv()
 
-dagshub_username = os.environ.get('DAGSHUB_USERNAME')
-dagshub_token = os.environ.get('DAGSHUB_TOKEN')
+dagshub_username = 'aNdr3W03'
+dagshub_token = 'ce65cb27b756223a79bc382ba57f0695e5172a96'
 dagshub_repo_name = 'diabetes-prediction'
 
 os.environ['MLFLOW_TRACKING_USERNAME'] = dagshub_username
 os.environ['MLFLOW_TRACKING_PASSWORD'] = dagshub_token
 
-mlflow_url = f'https://dagshub.com/{dagshub_username}/{dagshub_repo_name}.mlflow'
-mlflow.set_tracking_uri(mlflow_url)
+mlflow_uri = f'https://dagshub.com/{dagshub_username}/{dagshub_repo_name}.mlflow'
+mlflow.set_tracking_uri(mlflow_uri)
 
 logging.basicConfig(
     level=logging.INFO,
