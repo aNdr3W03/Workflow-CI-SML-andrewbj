@@ -45,14 +45,15 @@ jobs:
           python modelling.py --data_path diabetes_processed.csv --tuning
 
       - name: Get Latest MLflow run_id
+        working-directory: MLProjetc/models_tuned/
         run: |
-          RUN_ID=$(mlflow runs list --order-by 'start_time desc' --limit 1 --experiment-id 0 | tail -n 1 | awk '{print $1}')
+          RUN_ID=$(cat best_tuned_model_run_id.txt)
           echo 'RUN_ID=$RUN_ID' >> $GITHUB_ENV
           echo 'Latest run_id: $RUN_ID'
 
       - name: Install Python Dependencies
         run: |
-          pip install gdown
+          pip install docker
 
       - name: Upload to GitHub Artifacts
         if: env.RUN_ID != ''
