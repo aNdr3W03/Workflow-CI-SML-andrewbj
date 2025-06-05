@@ -46,7 +46,7 @@ logger = logging.getLogger('modelling.py')
 def mlflow_setup():
     try:
         if dagshub_username and dagshub_token:
-            mlflow.set_tracking_uri(mlflow_url)
+            mlflow.set_tracking_uri(mlflow_uri)
         else:
             raise ValueError('DagsHub Username and Token must set on the environment.')
         
