@@ -12,5 +12,6 @@ dependencies:
   - matplotlib
   - pip:
       - mlflow==2.19.0
-      - python-dotenv
+      - dagshub
       - joblib
+      - python-dotenv
