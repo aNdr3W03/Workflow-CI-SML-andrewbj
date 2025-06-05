@@ -6,6 +6,7 @@ import argparse
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
+import numpy as np
 
 import mlflow
 from mlflow.models.signature import infer_signature
@@ -173,10 +174,16 @@ def mlflow_log(model, model_name, params, metrics, cv_accuracy, input_data, cm):
             
             logger.info('Feature importance logged to MLflow.')
 
+        metrics_cleaned = {
+            k: float(v) if isinstance(v, np.floating)
+            else int(v) if isinstance(v, np.integer)
+            else v for k, v in metrics.items()
+        }
+
         metrics_path = f'models/{model_name}_metrics.json'
         os.makedirs(os.path.dirname(metrics_path), exist_ok=True)
         with open(metrics_path, 'w') as f:
-            json.dump(metrics, f, indent=4)
+            json.dump(metrics_cleaned, f, indent=4)
         mlflow.log_artifact(metrics_path)
         logger.info('Metrics saved and logged to MLflow.')
         

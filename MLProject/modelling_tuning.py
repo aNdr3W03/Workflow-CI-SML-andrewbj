@@ -5,6 +5,7 @@ import logging
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
+import numpy as np
 
 import mlflow
 from mlflow.models.signature import infer_signature
@@ -35,7 +36,7 @@ logging.basicConfig(
     format='%(asctime)s %(name)s [%(levelname)s] %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S',
     handlers=[
-        logging.FileHandler('training.log'),
+        logging.FileHandler('tuning.log'),
         logging.StreamHandler()
     ]
 )
@@ -49,13 +50,13 @@ def mlflow_setup():
         else:
             raise ValueError('DagsHub Username and Token must set on the environment.')
         
-        mlflow.set_experiment('Diabetes Prediction Tuning CI/CD')
+        mlflow.set_experiment('Diabetes Prediction Tuning CI')
         logger.info('MLflow setup for DagsHub completed.')
         
     except Exception as e:
         logger.exception(f'MLflow setup for DagsHub failed: {e}.')
         mlflow.set_tracking_uri('file:./mlruns ')
-        mlflow.set_experiment('Diabetes Prediction Tuning CI/CD')
+        mlflow.set_experiment('Diabetes Prediction Tuning CI')
         logger.info('MLflow setup locally completed.')
 
 def load_data(data_path='diabetes_processed.csv'):
@@ -124,7 +125,7 @@ def lr_model_tuning(X_train, X_test, y_train, y_test):
     metrics, cm = model_evaluate(best_model, X_test, y_test)
     logger.info(f'Logistic Regression model accuracy: {metrics['accuracy']:.4f}')
 
-    with mlflow.start_run(run_name='lr_tuned_run') as run:
+    with mlflow.start_run(run_name='lr_tuned_run_ci') as run:
         for param, value in best_params.items():
             mlflow.log_param(param, value)
         logger.info('Param logged to MLflow.')
@@ -164,10 +165,16 @@ def lr_model_tuning(X_train, X_test, y_train, y_test):
             mlflow.log_param(f'importance_{feature}', importance_value)
         logger.info('Feature importance logged to MLflow.')
 
+        metrics_cleaned = {
+            k: float(v) if isinstance(v, np.floating)
+            else int(v) if isinstance(v, np.integer)
+            else v for k, v in metrics.items()
+        }
+
         metrics_path = 'models_tuned/lr_tuned_metrics.json'
         os.makedirs(os.path.dirname(metrics_path), exist_ok=True)
         with open(metrics_path, 'w') as f:
-            json.dump(metrics, f, indent=4)
+            json.dump(metrics_cleaned, f, indent=4)
         mlflow.log_artifact(metrics_path)
         logger.info('Metrics saved and logged to MLflow.')
 
@@ -216,7 +223,7 @@ def rf_model_tuning(X_train, X_test, y_train, y_test):
     metrics, cm = model_evaluate(best_model, X_test, y_test)
     logger.info(f'Random Forest model accuracy: {metrics['accuracy']:.4f}')
 
-    with mlflow.start_run(run_name='rf_tuned_run') as run:
+    with mlflow.start_run(run_name='rf_tuned_run_ci') as run:
         for param, value in best_params.items():
             mlflow.log_param(param, value)
         logger.info('Param logged to MLflow.')
@@ -256,10 +263,16 @@ def rf_model_tuning(X_train, X_test, y_train, y_test):
             mlflow.log_param(f'importance_{feature}', importance_value)
         logger.info('Feature importance logged to MLflow.')
 
+        metrics_cleaned = {
+            k: float(v) if isinstance(v, np.floating)
+            else int(v) if isinstance(v, np.integer)
+            else v for k, v in metrics.items()
+        }
+
         metrics_path = 'models_tuned/rf_tuned_metrics.json'
         os.makedirs(os.path.dirname(metrics_path), exist_ok=True)
         with open(metrics_path, 'w') as f:
-            json.dump(metrics, f, indent=4)
+            json.dump(metrics_cleaned, f, indent=4)
         mlflow.log_artifact(metrics_path)
         logger.info('Metrics saved and logged to MLflow.')
 
@@ -310,7 +323,7 @@ def adaboost_model_tuning(X_train, X_test, y_train, y_test):
     metrics, cm = model_evaluate(best_model, X_test, y_test)
     logger.info(f'AdaBoost model accuracy: {metrics['accuracy']:.4f}')
 
-    with mlflow.start_run(run_name='adaboost_tuned_run') as run:
+    with mlflow.start_run(run_name='adaboost_tuned_run_ci') as run:
         for param, value in best_params.items():
             mlflow.log_param(param, value)
         logger.info('Param logged to MLflow.')
@@ -350,10 +363,16 @@ def adaboost_model_tuning(X_train, X_test, y_train, y_test):
             mlflow.log_param(f'importance_{feature}', importance_value)
         logger.info('Feature importance logged to MLflow.')
 
+        metrics_cleaned = {
+            k: float(v) if isinstance(v, np.floating)
+            else int(v) if isinstance(v, np.integer)
+            else v for k, v in metrics.items()
+        }
+
         metrics_path = 'models_tuned/adaboost_tuned_metrics.json'
         os.makedirs(os.path.dirname(metrics_path), exist_ok=True)
         with open(metrics_path, 'w') as f:
-            json.dump(metrics, f, indent=4)
+            json.dump(metrics_cleaned, f, indent=4)
         mlflow.log_artifact(metrics_path)
         logger.info('Metrics saved and logged to MLflow.')
 
@@ -401,7 +420,7 @@ def dt_model_tuning(X_train, X_test, y_train, y_test):
     metrics, cm = model_evaluate(best_model, X_test, y_test)
     logger.info(f'Decision Tree model accuracy: {metrics['accuracy']:.4f}')
 
-    with mlflow.start_run(run_name='dt_tuned_run') as run:
+    with mlflow.start_run(run_name='dt_tuned_run_ci') as run:
         for param, value in best_params.items():
             mlflow.log_param(param, value)
         logger.info('Param logged to MLflow.')
@@ -441,10 +460,16 @@ def dt_model_tuning(X_train, X_test, y_train, y_test):
             mlflow.log_param(f'importance_{feature}', importance_value)
         logger.info('Feature importance logged to MLflow.')
 
+        metrics_cleaned = {
+            k: float(v) if isinstance(v, np.floating)
+            else int(v) if isinstance(v, np.integer)
+            else v for k, v in metrics.items()
+        }
+
         metrics_path = 'models_tuned/dt_tuned_metrics.json'
         os.makedirs(os.path.dirname(metrics_path), exist_ok=True)
         with open(metrics_path, 'w') as f:
-            json.dump(metrics, f, indent=4)
+            json.dump(metrics_cleaned, f, indent=4)
         mlflow.log_artifact(metrics_path)
         logger.info('Metrics saved and logged to MLflow.')
 
