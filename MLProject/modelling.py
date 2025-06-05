@@ -29,6 +29,7 @@ os.environ['MLFLOW_TRACKING_USERNAME'] = dagshub_username
 os.environ['MLFLOW_TRACKING_PASSWORD'] = dagshub_token
 
 mlflow_url = f'https://dagshub.com/{dagshub_username}/{dagshub_repo_name}.mlflow'
+mlflow.set_tracking_uri(mlflow_url)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -214,7 +215,7 @@ def main(args):
 
             return best_run_id
         else:
-            mlflow_setup()
+            # mlflow_setup()
 
             X_train, X_test, y_train, y_test = load_data(args.data_path)
             
