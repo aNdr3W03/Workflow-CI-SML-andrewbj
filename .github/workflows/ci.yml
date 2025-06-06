@@ -48,9 +48,9 @@ jobs:
         working-directory: MLProject/models_tuned/
         run: |
           RUN_ID=$(cat best_tuned_model_run_id.txt)
-          echo 'RUN_ID=$RUN_ID' >> $GITHUB_ENV
-          echo 'Latest run_id: $RUN_ID'
-
+          echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
+          echo "Latest run_id: $RUN_ID"
+          
       - name: Install Python Dependencies
         run: |
           pip install docker
