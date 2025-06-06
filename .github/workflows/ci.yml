@@ -82,15 +82,3 @@ jobs:
         run: |
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/diabetes-prediction:latest
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/diabetes-prediction:${{ env.RUN_ID }}
-
-      - name: Post Login to Docker Hub
-        run: echo 'Docker image pushed to Docker Hub successfully'
-
-      - name: Post Set up Python 3.12.7
-        run: echo 'Python 3.12.7 workflow completed'
-
-      - name: Post Run Checkout Repository
-        run: echo 'Repository checkout completed'
-
-      - name: Complete Job
-        run: echo 'Diabetes Prediction CI/CD workflow completed successfully'
