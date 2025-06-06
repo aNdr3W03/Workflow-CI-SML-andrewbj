@@ -45,7 +45,7 @@ jobs:
           python modelling.py --data_path diabetes_processed.csv --tuning
 
       - name: Get Latest MLflow run_id
-        working-directory: MLProject
+        working-directory: MLProject/models_tuned/
         run: |
           RUN_ID=$(cat best_tuned_model_run_id.txt)
           echo 'RUN_ID=$RUN_ID' >> $GITHUB_ENV
