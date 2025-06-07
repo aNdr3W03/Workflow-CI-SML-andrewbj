@@ -21,8 +21,6 @@ from sklearn.tree import DecisionTreeClassifier
 from dotenv import load_dotenv
 load_dotenv()
 
-dagshub_token = os.environ.get('DAGSHUB_TOKEN')
-dagshub_username = os.environ.get('DAGSHUB_USERNAME')
 dagshub_repo_name = os.environ.get('DAGSHUB_REPO_NAME')
 
 logging.basicConfig(
@@ -39,10 +37,7 @@ logger = logging.getLogger('modelling_tuning.py')
 
 def mlflow_setup():
     try:
-        if dagshub_username and dagshub_token:
-            os.environ['MLFLOW_TRACKING_USERNAME'] = dagshub_username
-            os.environ['MLFLOW_TRACKING_PASSWORD'] = dagshub_token
-
+        if dagshub_repo_name:
             mlflow_url = f'https://dagshub.com/{dagshub_username}/{dagshub_repo_name}.mlflow'
             mlflow.set_tracking_uri(mlflow_url)
         else:
@@ -177,7 +172,7 @@ def lr_model_tuning(X_train, X_test, y_train, y_test):
         logger.info('Metrics saved and logged to MLflow.')
 
         mlflow.sklearn.log_model(
-            best_model, 'lr_tuned',
+            best_model, 'model',
             input_example=X_train.head(),
             signature=infer_signature(X_train, best_model.predict(X_train))
         )
@@ -275,7 +270,7 @@ def rf_model_tuning(X_train, X_test, y_train, y_test):
         logger.info('Metrics saved and logged to MLflow.')
 
         mlflow.sklearn.log_model(
-            best_model, 'rf_tuned',
+            best_model, 'model',
             input_example=X_train.head(),
             signature=infer_signature(X_train, best_model.predict(X_train))
         )
@@ -375,7 +370,7 @@ def adaboost_model_tuning(X_train, X_test, y_train, y_test):
         logger.info('Metrics saved and logged to MLflow.')
 
         mlflow.sklearn.log_model(
-            best_model, 'adaboost_tuned',
+            best_model, 'model',
             input_example=X_train.head(),
             signature=infer_signature(X_train, best_model.predict(X_train))
         )
@@ -472,7 +467,7 @@ def dt_model_tuning(X_train, X_test, y_train, y_test):
         logger.info('Metrics saved and logged to MLflow.')
 
         mlflow.sklearn.log_model(
-            best_model, 'dt_tuned',
+            best_model, 'model',
             input_example=X_train.head(),
             signature=infer_signature(X_train, best_model.predict(X_train))
         )
