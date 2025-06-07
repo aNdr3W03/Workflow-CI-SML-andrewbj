@@ -1,14 +1,12 @@
-FROM python:3.13.4-slim
-
-RUN apt-get update -y && apt-get install -y gcc && apt-get install -y git && apt-get clean && rm -rf /var/lib/apt/lists/*
+# Change from python:3.13.4-slum to miniconda3 base image
+FROM continuumio/miniconda3
 
 WORKDIR /app
 
 COPY . /app
 
 RUN conda env create -f conda.yaml && \
-    conda clean -a -y && \
-    pip install --no-cache-dir mlflow
+    conda clean -a -y
 
 SHELL [ "conda", "run", "-n", "diabet-pred-env", "/bin/bash", "-c" ]
 
