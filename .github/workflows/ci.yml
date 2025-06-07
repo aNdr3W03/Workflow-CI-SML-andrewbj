@@ -42,12 +42,11 @@ jobs:
           DAGSHUB_REPO_NAME: ${{ secrets.DAGSHUB_REPO_NAME }}
         working-directory: MLProject
         run: |
-          python modelling.py --data_path diabetes_processed.csv --tuning
+          mlflow run . --env-manager=local -e tune -P data_path=diabetes_processed.csv
 
       - name: Get Latest MLflow run_id
-        working-directory: MLProject/models_tuned/
         run: |
-          RUN_ID=$(cat best_tuned_model_run_id.txt)
+          RUN_ID=$(mlflow runs list --order-by "start_time desc" --limit 1 --experiment-id 0 | tail -n 1 | awk '{print $1}')
           echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
           echo "Latest run_id: $RUN_ID"
           
