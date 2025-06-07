@@ -15,9 +15,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set up Job
-        run: echo 'Starting Diabetes Prediction MLOps workflow...'
-        
       - name: Checkout Repository
         uses: actions/checkout@v3
 
