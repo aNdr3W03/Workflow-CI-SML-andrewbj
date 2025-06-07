@@ -21,6 +21,7 @@ from sklearn.tree import DecisionTreeClassifier
 from dotenv import load_dotenv
 load_dotenv()
 
+dagshub_username = os.environ.get('DAGSHUB_USERNAME')
 dagshub_repo_name = os.environ.get('DAGSHUB_REPO_NAME')
 
 logging.basicConfig(
@@ -37,7 +38,7 @@ logger = logging.getLogger('modelling_tuning.py')
 
 def mlflow_setup():
     try:
-        if dagshub_repo_name:
+        if dagshub_username and dagshub_repo_name:
             mlflow_url = f'https://dagshub.com/{dagshub_username}/{dagshub_repo_name}.mlflow'
             mlflow.set_tracking_uri(mlflow_url)
         else:
