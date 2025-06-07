@@ -1,17 +1,16 @@
-name: diabetes_prediction_env
+name: diabet-pred-env
 channels:
   - conda-forge
-  - defaults
 dependencies:
   - python=3.12.7
   - pip
-  - pandas
-  - numpy
-  - scikit-learn
-  - seaborn
-  - matplotlib
   - pip:
       - mlflow==2.19.0
+      - pandas
+      - numpy
+      - scikit-learn
+      - seaborn
+      - matplotlib
       - dagshub
       - joblib
       - python-dotenv

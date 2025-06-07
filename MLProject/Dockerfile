@@ -4,9 +4,14 @@ RUN apt-get update -y && apt-get install -y gcc && apt-get install -y git && apt
 
 WORKDIR /app
 
-COPY MLProject/ .
-COPY requirements.txt .
+COPY . /app
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN conda env create -f conda.yaml && \
+    conda clean -a -y && \
+    pip install --no-cache-dir mlflow
 
-ENTRYPOINT [ "mlflow", "run", "." ]
+SHELL [ "conda", "run", "-n", "diabet-pred-env", "/bin/bash", "-c" ]
+
+EXPOSE 5005
+
+CMD [ "conda", "run", "-n", "diabet-pred-env", "python", "modelling.py" ]
