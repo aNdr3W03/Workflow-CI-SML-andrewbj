@@ -12,4 +12,4 @@ SHELL [ "conda", "run", "-n", "diabet-pred-env", "/bin/bash", "-c" ]
 
 EXPOSE 5005
 
-CMD [ "conda", "run", "-n", "diabet-pred-env", "python", "modelling.py" ]
+CMD [ "conda", "run", "-n", "diabet-pred-env", "python", "modelling.py", "-t" ]
