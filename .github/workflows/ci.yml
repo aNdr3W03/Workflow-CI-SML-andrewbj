@@ -10,6 +10,9 @@ on:
       - main
   workflow_dispatch:  # Trigger manually via GitHub Actions UI
 
+env:
+  MLFLOW_TRACKING_URI: https://dagshub.com/${{ secrets.DAGSHUB_USERNAME }}/${{ secrets.DAGSHUB_REPO_NAME }}.mlflow
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -62,8 +65,11 @@ jobs:
 
       - name: Build Docker Model
         if: env.RUN_ID != ''
-        working-directory: MLProject
+        env:
+          MLFLOW_TRACKING_URI: ${{ env.MLFLOW_TRACKING_URI }}
+          MLFLOW_TRACKING_TOKEN: ${{ secrets.MLFLOW_TRACKING_TOKEN }}
         run: |
+          echo "Using RUN_ID=${{ env.RUN_ID }}"
           mlflow models build-docker --model-uri "runs:/$RUN_ID/model" --name "diabetes-prediction"
 
       - name: Login to Docker Hub
