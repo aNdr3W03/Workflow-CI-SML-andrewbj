@@ -62,6 +62,7 @@ jobs:
 
       - name: Build Docker Model
         if: env.RUN_ID != ''
+        working-directory: MLProject
         run: |
           mlflow models build-docker --model-uri "runs:/$RUN_ID/model" --name "diabetes-prediction"
 
