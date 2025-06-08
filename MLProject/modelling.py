@@ -22,7 +22,7 @@ from sklearn.tree import DecisionTreeClassifier
 from dotenv import load_dotenv
 load_dotenv()
 
-dagshub_repo_name = os.environ.get('DAGSHUB_REPO_NAME')
+mlflow_tracking_uri = os.environ.get('MLFLOW_TRACKING_URI')
 
 logging.basicConfig(
     level=logging.INFO,
@@ -38,18 +38,17 @@ logger = logging.getLogger('modelling.py')
 
 def mlflow_setup():
     try:
-        if dagshub_repo_name:
-            mlflow_uri = f'https://dagshub.com/aNdr3W03/{dagshub_repo_name}.mlflow'
-            mlflow.set_tracking_uri(mlflow_uri)
+        if mlflow_tracking_uri:
+            mlflow.set_tracking_uri(mlflow_tracking_uri)
         else:
-            raise ValueError('DagsHub Username and Token must set on the environment.')
+            raise ValueError('DagsHub MLflow Tracking URI must set on the environment.')
         
         mlflow.set_experiment('Diabetes Pred CI')
         logger.info('MLflow setup for DagsHub completed.')
         
     except Exception as e:
-        logger.error(f'MLflow setup for DagsHub failed: {e}.')
-        mlflow.set_tracking_uri('file:./mlruns')
+        logger.exception(f'MLflow setup for DagsHub failed: {e}.')
+        mlflow.set_tracking_uri('http://127.0.0.1:5000')
         mlflow.set_experiment('Diabetes Pred CI')
         logger.info('MLflow setup locally completed.')
 
