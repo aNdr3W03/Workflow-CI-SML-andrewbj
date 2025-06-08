@@ -18,21 +18,19 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Set up Python Conda
-        uses: conda-incubator/setup-miniconda@v2
+      - name: Set up Python 3.12.7
+        uses: actions/setup-python@v4
         with:
-          activate-environment: diabet-pred-env
-          environment-file: MLProject/conda.yaml
-          auto-activate-base: false
-
-      - name: Install Dependencies
-        run: |
-          pip install -r requirements.txt
+          python-version: '3.12.7'
 
       - name: Check Environment
         run: |
           python --version
           pip list
+
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
 
       - name: Run MLflow Project
         env:
@@ -41,7 +39,7 @@ jobs:
           DAGSHUB_REPO_NAME: ${{ secrets.DAGSHUB_REPO_NAME }}
         working-directory: MLProject
         run: |
-          mlflow run . -P data_path=diabetes_processed.csv -P model_name=rf --env-manager=local
+          python modelling.py --data_path diabetes_processed.csv --tuning
 
       - name: Get Latest MLflow run_id
         working-directory: MLProject/models_tuned/

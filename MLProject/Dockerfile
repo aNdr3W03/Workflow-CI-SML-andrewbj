@@ -10,4 +10,6 @@ RUN conda env create -f conda.yaml && \
 
 SHELL [ "conda", "run", "-n", "diabet-pred-env", "/bin/bash", "-c" ]
 
-CMD [ "conda", "run", "-n", "diabet-pred-env", "mlflow", "run", ".", "-P", "data_path=diabetes_processed.csv", "-e", "tune" ]
+EXPOSE 5005
+
+CMD [ "conda", "run", "-n", "diabet-pred-env", "python", "modelling.py", "-t" ]
