@@ -89,46 +89,40 @@ def model_evaluate(model, X_test, y_test):
     return metrics, cm
 
 def model_train(X_train, X_test, y_train, y_test, model_name, params=None):
-    logger.info(f'Model training started: {model_name}. Parameters: {params}')
-    if params is None:
-        params = {}
-
-    # Initialize the model with parameters
-    if model_name == 'lr':
-        model = LogisticRegression(**params, random_state=20250531)
-    elif model_name == 'rf':
-        model = RandomForestClassifier(**params, random_state=20250531)
-    elif model_name == 'adaboost':
-        model = AdaBoostClassifier(**params, random_state=20250531)
-    elif model_name == 'dt':
-        model = DecisionTreeClassifier(**params, random_state=20250531)
-    else:
-        logger.error(f'Unsupported model: {model_name}')
-        raise ValueError(f'Model {model_name} is not supported.')
-
-    # Model training
-    model.fit(X_train, y_train)
-    logger.info('Model training completed.')
-
-    # Model evaluation
-    metrics, cm = model_evaluate(model, X_test, y_test)
-
-    # Cross-validation accuracy
-    cv_accuracy = cross_val_score(model, X_train, y_train, cv=5, scoring='accuracy').mean()
-    logger.info(f'Cross-validation accuracy: {cv_accuracy:.4f}')
-
-    return model, metrics, cm, cv_accuracy
-
-def mlflow_log(model, model_name, params, metrics, cv_accuracy, input_data, cm):
     logger.info('Logging to MLflow.')
     with mlflow.start_run(run_name=f'{model_name}_run_ci') as run:
-        for param, value in params.items():
-            mlflow.log_param(param, value)
-        logger.info('Param logged to MLflow.')
-        
-        for metric, value in metrics.items():
-            mlflow.log_metric(metric, value)
+        logger.info(f'Model training started: {model_name}. Parameters: {params}')
+        if params is None:
+            params = {}
 
+        # Set up MLflow autologging
+        mlflow.autolog()
+
+        # Initialize the model with parameters
+        if model_name == 'lr':
+            model = LogisticRegression(**params, random_state=20250531)
+        elif model_name == 'rf':
+            model = RandomForestClassifier(**params, random_state=20250531)
+        elif model_name == 'adaboost':
+            model = AdaBoostClassifier(**params, random_state=20250531)
+        elif model_name == 'dt':
+            model = DecisionTreeClassifier(**params, random_state=20250531)
+        else:
+            logger.error(f'Unsupported model: {model_name}')
+            raise ValueError(f'Model {model_name} is not supported.')
+
+        # Model training
+        model.fit(X_train, y_train)
+        logger.info('Model training completed.')
+
+        # Model evaluation
+        metrics, cm = model_evaluate(model, X_test, y_test)
+
+        # Cross-validation accuracy
+        cv_accuracy = cross_val_score(model, X_train, y_train, cv=5, scoring='accuracy').mean()
+        logger.info(f'Cross-validation accuracy: {cv_accuracy:.4f}')
+
+        # Log parameters, metrics, and artifacts to MLflow
         mlflow.log_metric('accuracy_crossval', cv_accuracy)
         logger.info('Metrics logged to MLflow.')
 
@@ -152,7 +146,7 @@ def mlflow_log(model, model_name, params, metrics, cv_accuracy, input_data, cm):
 
         if hasattr(model, 'feature_importances_'):
             importance = pd.DataFrame({
-                'feature': input_data.columns,
+                'feature': X_train.columns,
                 'importance': model.feature_importances_,
             }).sort_values(by='importance', ascending=False)
 
@@ -161,7 +155,7 @@ def mlflow_log(model, model_name, params, metrics, cv_accuracy, input_data, cm):
             importance.to_csv(importance_path, index=False)
             mlflow.log_artifact(importance_path)
 
-            for feature, importance_value in zip(input_data.columns, model.feature_importances_):
+            for feature, importance_value in zip(X_train.columns, model.feature_importances_):
                 mlflow.log_param(f'importance_{feature}', importance_value)
             
             logger.info('Feature importance logged to MLflow.')
@@ -182,8 +176,8 @@ def mlflow_log(model, model_name, params, metrics, cv_accuracy, input_data, cm):
         mlflow.sklearn.log_model(
             model,
             'model',
-            input_example=input_data.head(),
-            signature=infer_signature(input_data, model.predict(input_data))
+            input_example=X_train.head(),
+            signature=infer_signature(X_train, model.predict(X_train))
         )
 
         model_path = f'models/{model_name}.pkl'
@@ -191,8 +185,8 @@ def mlflow_log(model, model_name, params, metrics, cv_accuracy, input_data, cm):
         joblib.dump(model, model_path)
         mlflow.log_artifact(model_path)
         logger.info('Model artifact saved and logged to MLflow.')
-        
-        return run.info.run_id
+
+        return run.info.run_id, metrics, cv_accuracy
 
 def main(args):
     try:
@@ -228,11 +222,9 @@ def main(args):
             model_name = args.model_name
             params = model_params.get(model_name, {})
 
-            model, metrics, cm, cv_accuracy = model_train(
+            run_id, metrics, cv_accuracy = model_train(
                 X_train, X_test, y_train, y_test, model_name, params
             )
-
-            run_id = mlflow_log(model, model_name, params, metrics, cv_accuracy, X_train, cm)
 
             logger.info(f'Model {model_name} trained and logged successfully.')
             logger.info(f'Run ID: {run_id}')
